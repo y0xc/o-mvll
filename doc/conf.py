@@ -84,7 +84,7 @@ author        = 'Romain Thomas'
 source_suffix = '.rst'
 master_doc    = 'index'
 
-version = omvll.OMVLL_VERSION
+version = getattr(omvll, "OMVLL_VERSION", "dev")
 release = version
 
 
@@ -100,6 +100,7 @@ templates_path = ['_templates']
 exclude_patterns = []
 
 autoclass_content = 'both'
+autodoc_member_order = 'bysource'
 
 
 # -- Options for HTML output -------------------------------------------------

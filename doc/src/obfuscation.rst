@@ -5,39 +5,52 @@ Config
 ------
 
 .. autoclass:: omvll.ObfuscationConfig
-  :members:
-  :inherited-members:
-  :undoc-members:
+  :members: obfuscate_string, break_control_flow, flatten_cfg, obfuscate_struct_access, obfuscate_variable_access, obfuscate_constants, obfuscate_arithmetic, anti_hooking, indirect_branch, indirect_call, basic_block_duplicate, function_outline, report_diff, default_config
 
 Template
 ########
 
-Here is a template for the main O-MVLL configuration file:
-
 .. code-block:: python
 
-  import omvll
-  from functools import lru_cache
+   import omvll
+   from functools import lru_cache
 
-  class MyConfig(omvll.ObfuscationConfig):
-      def __init__(self):
-          super().__init__()
+   class MyConfig(omvll.ObfuscationConfig):
+       def __init__(self):
+           super().__init__()
 
-      def obfuscate_string(self, module: omvll.Module, func: omvll.Function,
-                                 string: bytes):
+       def obfuscate_string(self, module: omvll.Module, func: omvll.Function,
+                            string: bytes):
+           if func.demangled_name == "Hello::say_hi()":
+               return omvll.StringEncOptDefault()
+           if "debug.cpp" in module.name:
+               return omvll.StringEncOptReplace("<REMOVED>")
+           return omvll.StringEncOptSkip()
 
-          if func.demangled_name == "Hello::say_hi()":
-              return True
+       def obfuscate_arithmetic(self, mod: omvll.Module, func: omvll.Function):
+           return omvll.ArithmeticOpt(True)
 
-          if "debug.cpp" in module.name:
-              return "<REMOVED>"
+       def flatten_cfg(self, mod: omvll.Module, func: omvll.Function):
+           return omvll.ControlFlowFlatteningOpt(True)
 
-          return False
+       def break_control_flow(self, mod: omvll.Module, func: omvll.Function):
+           return omvll.ObfuscationConfig.default_config(
+               self, mod, func, [], [], [], 10
+           )
+
+       def indirect_call(self, mod: omvll.Module, func: omvll.Function):
+           return omvll.IndirectCallOpt(True)
+
+       def function_outline(self, mod: omvll.Module, func: omvll.Function):
+           return omvll.FunctionOutlineWithProbability(10)
+
+       def basic_block_duplicate(self, mod: omvll.Module, func: omvll.Function):
+           return omvll.BasicBlockDuplicateWithProbability(10)
 
 
-  @lru_cache(maxsize=1)
-  def omvll_get_config() -> omvll.ObfuscationConfig:
-      return MyConfig()
+   @lru_cache(maxsize=1)
+   def omvll_get_config() -> omvll.ObfuscationConfig:
+       return MyConfig()
 
 Options
 -------
@@ -46,97 +59,75 @@ Anti-Hooking
 ############
 
 .. autoclass:: omvll.AntiHookOpt
-  :members:
-  :inherited-members:
-  :undoc-members:
 
 Arithmetic Obfuscation
 ######################
 
 .. autoclass:: omvll.ArithmeticOpt
-  :members:
-  :inherited-members:
-  :undoc-members:
+
+Basic Block Duplicate
+#####################
+
+.. autoclass:: omvll.BasicBlockDuplicateSkip
+
+.. autoclass:: omvll.BasicBlockDuplicateWithProbability
 
 Control-Flow Breaking
 #####################
 
 .. autoclass:: omvll.BreakControlFlowOpt
-  :members:
-  :inherited-members:
-  :undoc-members:
 
 Control-Flow Flattening
 #######################
 
 .. autoclass:: omvll.ControlFlowFlatteningOpt
-  :members:
-  :inherited-members:
-  :undoc-members:
+
+Function Outline
+################
+
+.. autoclass:: omvll.FunctionOutlineSkip
+
+.. autoclass:: omvll.FunctionOutlineWithProbability
+
+Indirect Branch
+###############
+
+.. autoclass:: omvll.IndirectBranchOpt
+
+Indirect Call
+#############
+
+.. autoclass:: omvll.IndirectCallOpt
 
 Opaque Constants
 ################
 
+.. autoclass:: omvll.OpaqueConstantsSkip
+
 .. autoclass:: omvll.OpaqueConstantsBool
-  :members:
-  :inherited-members:
-  :undoc-members:
 
 .. autoclass:: omvll.OpaqueConstantsLowerLimit
-  :members:
-  :inherited-members:
-  :undoc-members:
 
 .. autoclass:: omvll.OpaqueConstantsSet
-  :members:
-  :inherited-members:
-  :undoc-members:
 
-.. autoclass:: omvll.OpaqueConstantsSkip
-  :members:
-  :inherited-members:
-  :undoc-members:
-
+.. autoclass:: omvll.OpaqueConstantsExcludeSet
 
 Opaque Fields Access
 ####################
 
 .. autoclass:: omvll.StructAccessOpt
-  :members:
-  :inherited-members:
-  :undoc-members:
 
 .. autoclass:: omvll.VarAccessOpt
-  :members:
-  :inherited-members:
-  :undoc-members:
 
 Strings Encoding
 ################
 
 .. autoclass:: omvll.StringEncOptSkip
-  :members:
-  :inherited-members:
-  :undoc-members:
-
-.. autoclass:: omvll.StringEncOptReplace
-  :members:
-  :inherited-members:
-  :undoc-members:
-
-.. autoclass:: omvll.StringEncOptGlobal
-  :members:
-  :inherited-members:
-  :undoc-members:
 
 .. autoclass:: omvll.StringEncOptDefault
-  :members:
-  :inherited-members:
-  :undoc-members:
 
-.. autoclass:: omvll.StringEncOptStack
-  :members:
-  :inherited-members:
-  :undoc-members:
+.. autoclass:: omvll.StringEncOptGlobal
 
+.. autoclass:: omvll.StringEncOptLocal
 
+.. autoclass:: omvll.StringEncOptReplace

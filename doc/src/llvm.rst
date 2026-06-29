@@ -1,36 +1,30 @@
 LLVM Objects
 ~~~~~~~~~~~~
 
+These classes mirror LLVM's internal IR objects and are passed as parameters
+to every :py:class:`~omvll.ObfuscationConfig` callback. They are read-only;
+O-MVLL does not allow mutating IR through these bindings.
+
 Module
 ------
 
 .. autoclass:: omvll.Module
-  :members:
-  :inherited-members:
-  :undoc-members:
-
+  :members: identifier, name, source_filename, instruction_count, data_layout, dump
 
 Function
 --------
 
 .. autoclass:: omvll.Function
-  :members:
-  :inherited-members:
-  :undoc-members:
+  :members: name, demangled_name, nb_instructions
 
 Struct
 ------
 
 .. autoclass:: omvll.Struct
-  :members:
-  :inherited-members:
-  :undoc-members:
+  :members: name
 
 GlobalVariable
 --------------
 
 .. autoclass:: omvll.GlobalVariable
-  :members:
-  :inherited-members:
-  :undoc-members:
-
+  :members: name, demangled_name
